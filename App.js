@@ -22,6 +22,9 @@ export default function App() {
   const [taskFilter, setTaskFilter] = useState(1);
   const [editing, setEditing] = useState(-1);
 
+  let toDoTextInput = React.createRef();
+  let taskTypeDropdown = React.createRef();
+
   const handleDeleteToDo = (id) => {
     newData = taskData.filter((item) => {
       return item.id != id;
@@ -44,6 +47,10 @@ export default function App() {
       setTaskCount(taskCount + 1);
       handleFilter(taskFilter);
     }
+    toDoTextInput.current.clear();
+    setCurrentText('');
+    taskTypeDropdown.current.reset();
+    setTaskType({});
   };
 
   const handleFilter = (filter) => {
@@ -72,17 +79,16 @@ export default function App() {
   };
 
   const handleEditedData = (id, newData) => {
-    console.log("id", id);
-    console.log("newData", newData);
 
-    // item = taskData.find((element) => {
-    //   if (element.id == id) {
-    //     return true;
-    //   }
-    // });
-    // item.name = newData;
-    // item.isEdit = false;
-    // setEditing(-1);
+
+    item = taskData.find((element) => {
+      if (element.id == id) {
+        return true;
+      }
+    });
+    item.name = newData;
+    item.isEdit = false;
+    setEditing(-1);
   };
 
   const toDoTypes = [
@@ -125,6 +131,7 @@ export default function App() {
             placeholder="Add To-do"
             style={styles.todoInput}
             onChangeText={(t) => setCurrentText(t)}
+            ref={toDoTextInput}
           />
         </View>
 
@@ -138,6 +145,7 @@ export default function App() {
           }}
         >
           <SelectDropdown
+            ref={taskTypeDropdown}
             data={toDoTypes}
             onSelect={(selectedItem, index) => {
               setTaskType(selectedItem);
@@ -198,7 +206,7 @@ export default function App() {
             return (
               <View style={styles.dropdownButtonStyle}>
                 <Text style={styles.dropdownButtonTxtStyle}>
-                  {(selectedItem && selectedItem.label) || "Select your type"}
+                  {(selectedItem && selectedItem.label) || "Select your filter"}
                 </Text>
                 {isOpened ? (
                   <ArrowDown2 size="32" color="#6d63ff" />
