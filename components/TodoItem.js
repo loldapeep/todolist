@@ -20,8 +20,7 @@ import {
 
 const TodoItem = (props) => {
   const [isActive, setIsActive] = useState(props.active);
-  const [currentEdit, setCurrentEdit] = useState(props.taskName);
-  console.log("isEdit", props.isEdit);
+  const [currentEdit, setCurrentEdit] = useState("");
   return (
     <View style={styles.task}>
       <View style={styles.shadow}>
@@ -59,7 +58,7 @@ const TodoItem = (props) => {
           <View style={styles.taskInfo}>
             <TextInput
               defaultValue={props.taskName}
-              onChange={(t) => setCurrentEdit(t)}
+              onChangeText={(t) => setCurrentEdit(t)}
             ></TextInput>
           </View>
         )}
@@ -71,7 +70,9 @@ const TodoItem = (props) => {
         ) : (
           <TouchableOpacity
             style={styles.editButton}
-            onPress={() => {props.confirmEdit(currentEdit)}}
+            onPress={() => {
+              props.confirmEdit(currentEdit);
+            }}
           >
             <Edit size="24" color="#6d63ff" />
           </TouchableOpacity>

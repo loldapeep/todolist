@@ -72,14 +72,17 @@ export default function App() {
   };
 
   const handleEditedData = (id, newData) => {
-    item = taskData.find((element) => {
-      if (element.id == id) {
-        return true;
-      }
-    });
-    item.name = newData;
-    item.isEdit = false;
-    setEditing(-1);
+    console.log("id", id);
+    console.log("newData", newData);
+
+    // item = taskData.find((element) => {
+    //   if (element.id == id) {
+    //     return true;
+    //   }
+    // });
+    // item.name = newData;
+    // item.isEdit = false;
+    // setEditing(-1);
   };
 
   const toDoTypes = [
@@ -137,7 +140,6 @@ export default function App() {
           <SelectDropdown
             data={toDoTypes}
             onSelect={(selectedItem, index) => {
-              // console.log(selectedItem);
               setTaskType(selectedItem);
             }}
             renderButton={(selectedItem, isOpened) => {
