@@ -19,28 +19,27 @@ import {
 // import { Icon } from 'react-native-elements';
 
 const TodoItem = (props) => {
-  const [isActive, setIsActive] = useState(props.active);
   const [currentEdit, setCurrentEdit] = useState("");
+  console.log("item", props.active);
+  console.log("props", props);
+
   return (
     <View style={styles.task}>
       <View style={styles.shadow}>
-        <TouchableOpacity
-          style={styles.checkbox}
-          onPress={() => setIsActive(!isActive)}
-        >
-          {isActive ? (
-            <ToggleOnCircle size="32" color="#6d63ff" />
+        <TouchableOpacity style={styles.checkbox} onPress={()=>props.changeActive(!props.active)}>
+          {props.active ? (
+            <ToggleOnCircle size="24" color="#6d63ff" />
           ) : (
-            <ToggleOffCircle size="32" color="#6d63ff" />
+            <ToggleOffCircle size="24" color="#6d63ff" />
           )}
         </TouchableOpacity>
-
         {!props.isEdit ? (
           <View style={styles.taskInfo}>
             <Text
+              onPress={() => props.navigation.navigate("Details", props)}
               style={[
                 styles.taskName,
-                { textDecorationLine: isActive ? "line-through" : "none" },
+                { textDecorationLine: props.active ? "line-through" : "none" },
               ]}
             >
               {props.taskName}
@@ -48,7 +47,7 @@ const TodoItem = (props) => {
             <Text
               style={[
                 styles.taskType,
-                { textDecorationLine: isActive ? "line-through" : "none" },
+                { textDecorationLine: props.active ? "line-through" : "none" },
               ]}
             >
               {props.type.label}
