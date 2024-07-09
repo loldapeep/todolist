@@ -42,13 +42,13 @@ const TodoList = ({ navigation, props }) => {
         ...taskData,
         {
           name: currentText,
-          active: true,
+          active: false,
           id: uuid.v4(),
           type: taskType,
           isEdit: false,
         },
       ]);
-      // setTaskCount(taskCount + 1);
+      setData();
       handleFilter(taskFilter);
       toDoTextInput.current.clear();
       setCurrentText("");
@@ -62,7 +62,6 @@ const TodoList = ({ navigation, props }) => {
   };
 
   const handleEdit = (id) => {
-    // console.log(id);
     if (editing != -1) {
       const oldEdit = taskData.find((element) => {
         if (element.id == editing) return true;
@@ -91,13 +90,8 @@ const TodoList = ({ navigation, props }) => {
     setEditing(-1);
   };
 
-  const handleActive = (id, isActive) => {
-    const newActive = taskData.find((element) => {
-      if (element.id == id) {
-        return true;
-      }
-    });
-    newActive.active = isActive;
+  const handleActive = (item) => {
+    item.active = !item.active;
     setData();
   };
 
@@ -107,7 +101,6 @@ const TodoList = ({ navigation, props }) => {
     { label: "type 3", value: 4 },
     { label: "type 4", value: 5 },
   ];
-  // console.log("taskData", taskData);
 
   const user = useAppSelector((state: RootState) => state.user.user);
 
@@ -115,7 +108,6 @@ const TodoList = ({ navigation, props }) => {
     setTaskData(
       (await getDoc(doc(db, "users", `${user.email}`))).data().todoList
     );
-    console.log('taskData', taskData);
     if (taskData === null) {
       setTaskData([]);
     }
@@ -127,11 +119,7 @@ const TodoList = ({ navigation, props }) => {
   };
 
   useEffect(() => {
-    if (initData === 0) {
-      getData();
-    } else {
-      setData();
-    }
+    getData();
   }, [taskData]);
 
   return (
@@ -289,13 +277,12 @@ const TodoList = ({ navigation, props }) => {
               key={item.id}
               taskName={item.name}
               active={item.active}
-              delete={() => handleDeleteToDo(item.id)}
+              deleteItem={() => handleDeleteToDo(item.id)}
               type={item.type}
               edit={() => handleEdit(item.id)}
               isEdit={item.isEdit}
               confirmEdit={(newData) => handleEditedData(item.id, newData)}
-              changeActive={(isActive) => handleActive(item.id, isActive)}
-              navigation={navigation}
+              changeActive={() => handleActive(item)}
             />
           ))}
       </ScrollView>

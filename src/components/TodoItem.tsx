@@ -2,13 +2,9 @@ import {
   StyleSheet,
   Text,
   View,
-  Image,
   TextInput,
   TouchableOpacity,
-  ScrollView,
-  SafeAreaView,
 } from "react-native";
-import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
   Trash,
@@ -16,68 +12,89 @@ import {
   ToggleOnCircle,
   Edit,
 } from "iconsax-react-native";
-// import { Icon } from 'react-native-elements';
 
-const TodoItem = (props) => {
+interface TodoItemProps {
+  key: string;
+  taskName: string;
+  active: boolean;
+  deleteItem: () => void;
+  type: {
+    label: string;
+    value: number;
+  };
+  edit: () => void;
+  isEdit: boolean;
+  confirmEdit: (e: any) => void;
+  changeActive: () => void;
+}
+
+const TodoItem = ({
+  key,
+  taskName,
+  active,
+  type,
+  edit,
+  deleteItem,
+  isEdit,
+  confirmEdit,
+  changeActive,
+}: TodoItemProps) => {
   const [currentEdit, setCurrentEdit] = useState("");
-  console.log("item", props.active);
-  console.log("props", props);
 
   return (
     <View style={styles.task}>
       <View style={styles.shadow}>
-        <TouchableOpacity style={styles.checkbox} onPress={()=>props.changeActive(!props.active)}>
-          {props.active ? (
+        <TouchableOpacity style={styles.checkbox} onPress={changeActive}>
+          {active ? (
             <ToggleOnCircle size="24" color="#6d63ff" />
           ) : (
             <ToggleOffCircle size="24" color="#6d63ff" />
           )}
         </TouchableOpacity>
-        {!props.isEdit ? (
+        {!isEdit ? (
           <View style={styles.taskInfo}>
             <Text
-              onPress={() => props.navigation.navigate("Details", props)}
               style={[
                 styles.taskName,
-                { textDecorationLine: props.active ? "line-through" : "none" },
+                { textDecorationLine: active ? "line-through" : "none" },
               ]}
             >
-              {props.taskName}
+              {taskName}
             </Text>
             <Text
               style={[
                 styles.taskType,
-                { textDecorationLine: props.active ? "line-through" : "none" },
+                { textDecorationLine: active ? "line-through" : "none" },
               ]}
             >
-              {props.type.label}
+              {type.label}
             </Text>
           </View>
         ) : (
           <View style={styles.taskInfo}>
             <TextInput
-              defaultValue={props.taskName}
+              defaultValue={taskName}
               onChangeText={(t) => setCurrentEdit(t)}
             ></TextInput>
           </View>
         )}
 
-        {!props.isEdit ? (
-          <TouchableOpacity style={styles.editButton} onPress={props.edit}>
+        {!isEdit ? (
+          <TouchableOpacity style={styles.editButton} onPress={edit}>
             <Edit size="24" color="#6d63ff" />
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
             style={styles.editButton}
             onPress={() => {
-              props.confirmEdit(currentEdit);
+              confirmEdit(currentEdit);
             }}
           >
             <Edit size="24" color="#6d63ff" />
           </TouchableOpacity>
         )}
 
-        <TouchableOpacity style={styles.delButton} onPress={props.delete}>
+        <TouchableOpacity style={styles.delButton} onPress={deleteItem}>
           <Trash size="24" color="#6d63ff" />
         </TouchableOpacity>
       </View>
