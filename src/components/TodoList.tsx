@@ -11,22 +11,26 @@ import {
 } from "react-native";
 import TodoItem from "./TodoItem";
 import { ArrowDown2, ArrowUp2, AddCircle } from "iconsax-react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SelectDropdown from "react-native-select-dropdown";
+import { setDoc, doc, getDoc } from "firebase/firestore";
+import { db } from "../../firebaseconfig";
+import { useAppSelector, RootState } from "../store";
+import uuid from "react-native-uuid";
 
 const TodoList = ({ navigation, props }) => {
   const [currentText, setCurrentText] = useState("");
   const [taskData, setTaskData] = useState([]);
-  const [taskCount, setTaskCount] = useState(0);
+  const [initData, setInitData] = useState(0);
   const [taskType, setTaskType] = useState({ label: "placeholder", value: -1 });
   const [taskFilter, setTaskFilter] = useState(1);
   const [editing, setEditing] = useState(-1);
 
-  let toDoTextInput = React.createRef();
-  let taskTypeDropdown = React.createRef();
+  let toDoTextInput = React.createRef<TextInput>();
+  let taskTypeDropdown = React.createRef<SelectDropdown>();
 
   const handleDeleteToDo = (id) => {
-    newData = taskData.filter((item) => {
+    const newData = taskData.filter((item) => {
       return item.id != id;
     });
     setTaskData(newData);
@@ -39,12 +43,12 @@ const TodoList = ({ navigation, props }) => {
         {
           name: currentText,
           active: true,
-          id: taskCount,
+          id: uuid.v4(),
           type: taskType,
           isEdit: false,
         },
       ]);
-      setTaskCount(taskCount + 1);
+      // setTaskCount(taskCount + 1);
       handleFilter(taskFilter);
       toDoTextInput.current.clear();
       setCurrentText("");
@@ -60,13 +64,13 @@ const TodoList = ({ navigation, props }) => {
   const handleEdit = (id) => {
     // console.log(id);
     if (editing != -1) {
-      oldEdit = taskData.find((element) => {
+      const oldEdit = taskData.find((element) => {
         if (element.id == editing) return true;
       });
       oldEdit.isEdit = false;
     }
 
-    newEdit = taskData.find((element) => {
+    const newEdit = taskData.find((element) => {
       if (element.id == id) {
         return true;
       }
@@ -76,23 +80,25 @@ const TodoList = ({ navigation, props }) => {
   };
 
   const handleEditedData = (id, newData) => {
-    item = taskData.find((element) => {
+    const item = taskData.find((element) => {
       if (element.id == id) {
         return true;
       }
     });
     item.name = newData;
     item.isEdit = false;
+    setData();
     setEditing(-1);
   };
 
   const handleActive = (id, isActive) => {
-    newActive = taskData.find((element) => {
+    const newActive = taskData.find((element) => {
       if (element.id == id) {
         return true;
       }
     });
     newActive.active = isActive;
+    setData();
   };
 
   const toDoTypes = [
@@ -102,6 +108,31 @@ const TodoList = ({ navigation, props }) => {
     { label: "type 4", value: 5 },
   ];
   // console.log("taskData", taskData);
+
+  const user = useAppSelector((state: RootState) => state.user.user);
+
+  const getData = async () => {
+    setTaskData(
+      (await getDoc(doc(db, "users", `${user.email}`))).data().todoList
+    );
+    console.log('taskData', taskData);
+    if (taskData === null) {
+      setTaskData([]);
+    }
+    setInitData(1);
+  };
+
+  const setData = async () => {
+    await setDoc(doc(db, "users", `${user.email}`), { todoList: taskData });
+  };
+
+  useEffect(() => {
+    if (initData === 0) {
+      getData();
+    } else {
+      setData();
+    }
+  }, [taskData]);
 
   return (
     <View style={styles.container}>
