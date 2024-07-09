@@ -91,14 +91,10 @@ const TodoList = ({ navigation, props }) => {
     setEditing(-1);
   };
 
-  const handleActive = (id, isActive) => {
-    const newActive = taskData.find((element) => {
-      if (element.id == id) {
-        return true;
-      }
-    });
-    newActive.active = isActive;
+  const handleActive = (item) => {
+    item.active = !item.active;
     setData();
+    getData();
   };
 
   const toDoTypes = [
@@ -127,10 +123,10 @@ const TodoList = ({ navigation, props }) => {
   };
 
   useEffect(() => {
-    if (initData === 0) {
-      getData();
-    } else {
+    if (initData === 1) {
       setData();
+    } else {
+      getData();
     }
   }, [taskData]);
 
@@ -289,13 +285,12 @@ const TodoList = ({ navigation, props }) => {
               key={item.id}
               taskName={item.name}
               active={item.active}
-              delete={() => handleDeleteToDo(item.id)}
+              deleteItem={() => handleDeleteToDo(item.id)}
               type={item.type}
               edit={() => handleEdit(item.id)}
               isEdit={item.isEdit}
               confirmEdit={(newData) => handleEditedData(item.id, newData)}
-              changeActive={(isActive) => handleActive(item.id, isActive)}
-              navigation={navigation}
+              changeActive={() => handleActive(item)}
             />
           ))}
       </ScrollView>
