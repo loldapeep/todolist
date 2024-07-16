@@ -52,7 +52,6 @@ const ChangeProfilePictureModal = ({ visibleModal, onClose }: Props) => {
         resolve(xhr.response);
       };
       xhr.onerror = function () {
-        // console.log(e);
         reject(new TypeError("Network request failed"));
       };
       xhr.responseType = "blob";

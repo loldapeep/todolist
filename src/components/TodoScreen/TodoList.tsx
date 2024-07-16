@@ -1,22 +1,20 @@
-import { StatusBar } from "expo-status-bar";
 import {
   StyleSheet,
   Text,
   View,
-  Button,
   TextInput,
   TouchableOpacity,
   ScrollView,
-  SafeAreaView,
 } from "react-native";
 import TodoItem from "./TodoItem";
 import { ArrowDown2, ArrowUp2, AddCircle } from "iconsax-react-native";
 import React, { useEffect, useState } from "react";
 import SelectDropdown from "react-native-select-dropdown";
 import { setDoc, doc, getDoc } from "firebase/firestore";
-import { db } from "../../firebaseconfig";
-import { useAppSelector, RootState } from "../store";
+import { db } from "../../../firebaseconfig";
+import { useAppSelector, RootState } from "../../store";
 import uuid from "react-native-uuid";
+import ChooseLocationModal from "./ChooseLocationModal";
 
 const TodoList = ({ navigation, props }) => {
   const [currentText, setCurrentText] = useState("");
@@ -25,6 +23,12 @@ const TodoList = ({ navigation, props }) => {
   const [taskType, setTaskType] = useState({ label: "placeholder", value: -1 });
   const [taskFilter, setTaskFilter] = useState(1);
   const [editing, setEditing] = useState(-1);
+  const [changeLocationVisibility, setChangeLocationVisibility] =
+    useState(false);
+  const [taskLocation, setTaskLocation] = useState({
+    latitude: 0,
+    longitude: 0,
+  });
 
   let toDoTextInput = React.createRef<TextInput>();
   let taskTypeDropdown = React.createRef<SelectDropdown>();
@@ -46,6 +50,7 @@ const TodoList = ({ navigation, props }) => {
           id: uuid.v4(),
           type: taskType,
           isEdit: false,
+          location: taskLocation,
         },
       ]);
       // setTaskCount(taskCount + 1);
@@ -54,6 +59,10 @@ const TodoList = ({ navigation, props }) => {
       setCurrentText("");
       taskTypeDropdown.current.reset();
       setTaskType({ label: "placeholder", value: -1 });
+      setTaskLocation({
+        latitude: 0,
+        longitude: 0,
+      });
     }
   };
 
@@ -62,7 +71,6 @@ const TodoList = ({ navigation, props }) => {
   };
 
   const handleEdit = (id) => {
-    // console.log(id);
     if (editing != -1) {
       const oldEdit = taskData.find((element) => {
         if (element.id == editing) return true;
@@ -103,7 +111,6 @@ const TodoList = ({ navigation, props }) => {
     { label: "type 3", value: 4 },
     { label: "type 4", value: 5 },
   ];
-  // console.log("taskData", taskData);
 
   const user = useAppSelector((state: RootState) => state.user.user);
 
@@ -111,7 +118,7 @@ const TodoList = ({ navigation, props }) => {
     setTaskData(
       (await getDoc(doc(db, "users", `${user.email}`))).data().todoList
     );
-    console.log('taskData', taskData);
+
     if (taskData === null) {
       setTaskData([]);
     }
@@ -129,6 +136,14 @@ const TodoList = ({ navigation, props }) => {
       getData();
     }
   }, [taskData]);
+
+  const handleLocation = (location) => {
+    setTaskLocation({
+      latitude: location.latitude,
+      longitude: location.longitude,
+    });
+    setChangeLocationVisibility(false);
+  };
 
   return (
     <View style={styles.container}>
@@ -222,6 +237,26 @@ const TodoList = ({ navigation, props }) => {
             <AddCircle size="24" color="#6d63ff" />
           </TouchableOpacity>
         </View>
+        <View style={{ alignItems: "center", width: "100%" }}>
+          <TouchableOpacity onPress={() => setChangeLocationVisibility(true)}>
+            <View
+              style={{
+                backgroundColor: "white",
+                marginBottom: 10,
+                padding: 10,
+                borderRadius: 10,
+              }}
+            >
+              <Text style={{ fontSize: 20 }}>Change task location</Text>
+              <Text style={{ fontSize: 12 }}>
+                Current latitude: {taskLocation.latitude}
+              </Text>
+              <Text style={{ fontSize: 12 }}>
+                Current longitude: {taskLocation.longitude}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View
@@ -291,9 +326,15 @@ const TodoList = ({ navigation, props }) => {
               isEdit={item.isEdit}
               confirmEdit={(newData) => handleEditedData(item.id, newData)}
               changeActive={() => handleActive(item)}
+              onPress={() => navigation.navigate("Details", { item })}
             />
           ))}
       </ScrollView>
+      <ChooseLocationModal
+        visibleModal={changeLocationVisibility}
+        onChoose={(location) => handleLocation(location)}
+        onClose={() => handleLocation(taskLocation)}
+      />
     </View>
   );
 };
@@ -307,6 +348,7 @@ const styles = StyleSheet.create({
 
   container: {
     flexDirection: "column",
+    flex: 1,
     // height: 1000,
   },
 

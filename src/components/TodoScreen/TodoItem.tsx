@@ -26,6 +26,7 @@ interface TodoItemProps {
   isEdit: boolean;
   confirmEdit: (e: any) => void;
   changeActive: () => void;
+  onPress: () => void;
 }
 
 const TodoItem = ({
@@ -38,6 +39,7 @@ const TodoItem = ({
   isEdit,
   confirmEdit,
   changeActive,
+  onPress
 }: TodoItemProps) => {
   const [currentEdit, setCurrentEdit] = useState("");
 
@@ -53,22 +55,25 @@ const TodoItem = ({
         </TouchableOpacity>
         {!isEdit ? (
           <View style={styles.taskInfo}>
-            <Text
-              style={[
-                styles.taskName,
-                { textDecorationLine: active ? "line-through" : "none" },
-              ]}
-            >
-              {taskName}
-            </Text>
-            <Text
-              style={[
-                styles.taskType,
-                { textDecorationLine: active ? "line-through" : "none" },
-              ]}
-            >
-              {type.label}
-            </Text>
+            <TouchableOpacity onPress={onPress}>
+              <Text
+                style={[
+                  styles.taskName,
+                  { textDecorationLine: !active ? "line-through" : "none" },
+                ]}
+              >
+                {taskName}
+              </Text>
+              <Text
+                style={[
+                  styles.taskType,
+                  { textDecorationLine: !active ? "line-through" : "none" },
+                ]}
+              >
+                {type.label}
+              </Text>              
+            </TouchableOpacity>
+
           </View>
         ) : (
           <View style={styles.taskInfo}>

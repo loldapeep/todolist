@@ -40,14 +40,10 @@ const Login = ({ route, navigation }) => {
   });
 
   const onSignup = (data) => {
-    // console.log("data", data);
-    // Alert.alert("Info", JSON.stringify(data));
     registerAndLogin(data.email, data.password);
   };
 
   const onLogin = (data) => {
-    // console.log("data", data);
-    // Alert.alert("Info", JSON.stringify(data));
     login(data.email, data.password);
   };
 
@@ -77,7 +73,6 @@ const Login = ({ route, navigation }) => {
         email: email,
         password: password,
       };
-      // console.log(user);
       dispatch(setUser(userProfile as IUserProfile));
       return;
     } catch (error) {
