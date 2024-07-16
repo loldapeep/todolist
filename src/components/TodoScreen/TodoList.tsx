@@ -16,13 +16,28 @@ import { useAppSelector, RootState } from "../../store";
 import uuid from "react-native-uuid";
 import ChooseLocationModal from "./ChooseLocationModal";
 
+interface TaskData {
+  id: string;
+  name: string;
+  active: boolean;
+  isEdit: boolean;
+  type: {
+    label: string;
+    value: number;
+  };
+  location: {
+    latitude: string;
+    longitude: string;
+  };
+}
+
 const TodoList = ({ navigation, props }) => {
-  const [currentText, setCurrentText] = useState("");
-  const [taskData, setTaskData] = useState([]);
-  const [initData, setInitData] = useState(0);
+  const [currentText, setCurrentText] = useState<string>("");
+  const [taskData, setTaskData] = useState<TaskData[]>();
+  const [initData, setInitData] = useState<number>(0);
   const [taskType, setTaskType] = useState({ label: "placeholder", value: -1 });
-  const [taskFilter, setTaskFilter] = useState(1);
-  const [editing, setEditing] = useState(-1);
+  const [taskFilter, setTaskFilter] = useState<number>(1);
+  const [editing, setEditing] = useState<string>("-1");
   const [changeLocationVisibility, setChangeLocationVisibility] =
     useState(false);
   const [taskLocation, setTaskLocation] = useState(null);
@@ -30,7 +45,7 @@ const TodoList = ({ navigation, props }) => {
   let toDoTextInput = React.createRef<TextInput>();
   let taskTypeDropdown = React.createRef<SelectDropdown>();
 
-  const handleDeleteToDo = (id) => {
+  const handleDeleteToDo = (id: string) => {
     const newData = taskData.filter((item) => {
       return item.id != id;
     });
@@ -38,19 +53,27 @@ const TodoList = ({ navigation, props }) => {
   };
 
   const handleData = () => {
+    console.log("data", {
+      name: currentText,
+      active: true,
+      id: uuid.v4(),
+      type: taskType,
+      isEdit: false,
+      location: taskLocation,
+    });
     if (currentText !== "" && taskType.value != -1) {
       setTaskData([
         ...taskData,
         {
           name: currentText,
           active: true,
-          id: uuid.v4(),
+          id: String(uuid.v4()),
           type: taskType,
           isEdit: false,
           location: taskLocation,
         },
       ]);
-      // setTaskCount(taskCount + 1);
+
       handleFilter(taskFilter);
       toDoTextInput.current.clear();
       setCurrentText("");
@@ -64,8 +87,8 @@ const TodoList = ({ navigation, props }) => {
     setTaskFilter(filter);
   };
 
-  const handleEdit = (id) => {
-    if (editing != -1) {
+  const handleEdit = (id: string) => {
+    if (editing !== "-1") {
       const oldEdit = taskData.find((element) => {
         if (element.id == editing) return true;
       });
@@ -90,7 +113,7 @@ const TodoList = ({ navigation, props }) => {
     item.name = newData;
     item.isEdit = false;
     setData();
-    setEditing(-1);
+    setEditing("-1");
   };
 
   const handleActive = (item) => {
@@ -244,7 +267,6 @@ const TodoList = ({ navigation, props }) => {
               <Text style={{ fontSize: 20 }}>Change task location</Text>
               {taskLocation !== null ? (
                 <>
-                  {" "}
                   <Text style={{ fontSize: 12 }}>
                     Current latitude: {taskLocation.latitude}
                   </Text>
@@ -308,28 +330,29 @@ const TodoList = ({ navigation, props }) => {
       </View>
 
       <ScrollView style={styles.bottomUI}>
-        {taskData
-          .filter((item) => {
-            if (taskFilter == 1) {
-              return true;
-            } else {
-              return item.type.value == taskFilter;
-            }
-          })
-          .map((item) => (
-            <TodoItem
-              key={item.id}
-              taskName={item.name}
-              active={item.active}
-              deleteItem={() => handleDeleteToDo(item.id)}
-              type={item.type}
-              edit={() => handleEdit(item.id)}
-              isEdit={item.isEdit}
-              confirmEdit={(newData) => handleEditedData(item.id, newData)}
-              changeActive={() => handleActive(item)}
-              onPress={() => navigation.navigate("Details", { item })}
-            />
-          ))}
+        {taskData &&
+          taskData
+            .filter((item) => {
+              if (taskFilter == 1) {
+                return true;
+              } else {
+                return item.type.value == taskFilter;
+              }
+            })
+            .map((item) => (
+              <TodoItem
+                key={item.id}
+                taskName={item.name}
+                active={item.active}
+                deleteItem={() => handleDeleteToDo(item.id)}
+                type={item.type}
+                edit={() => handleEdit(item.id)}
+                isEdit={item.isEdit}
+                confirmEdit={(newData) => handleEditedData(item.id, newData)}
+                changeActive={() => handleActive(item)}
+                onPress={() => navigation.navigate("Details", { item })}
+              />
+            ))}
       </ScrollView>
       <ChooseLocationModal
         visibleModal={changeLocationVisibility}
