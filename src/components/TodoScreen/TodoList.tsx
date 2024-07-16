@@ -25,10 +25,7 @@ const TodoList = ({ navigation, props }) => {
   const [editing, setEditing] = useState(-1);
   const [changeLocationVisibility, setChangeLocationVisibility] =
     useState(false);
-  const [taskLocation, setTaskLocation] = useState({
-    latitude: 0,
-    longitude: 0,
-  });
+  const [taskLocation, setTaskLocation] = useState(null);
 
   let toDoTextInput = React.createRef<TextInput>();
   let taskTypeDropdown = React.createRef<SelectDropdown>();
@@ -59,10 +56,7 @@ const TodoList = ({ navigation, props }) => {
       setCurrentText("");
       taskTypeDropdown.current.reset();
       setTaskType({ label: "placeholder", value: -1 });
-      setTaskLocation({
-        latitude: 0,
-        longitude: 0,
-      });
+      setTaskLocation(null);
     }
   };
 
@@ -248,12 +242,19 @@ const TodoList = ({ navigation, props }) => {
               }}
             >
               <Text style={{ fontSize: 20 }}>Change task location</Text>
-              <Text style={{ fontSize: 12 }}>
-                Current latitude: {taskLocation.latitude}
-              </Text>
-              <Text style={{ fontSize: 12 }}>
-                Current longitude: {taskLocation.longitude}
-              </Text>
+              {taskLocation !== null ? (
+                <>
+                  {" "}
+                  <Text style={{ fontSize: 12 }}>
+                    Current latitude: {taskLocation.latitude}
+                  </Text>
+                  <Text style={{ fontSize: 12 }}>
+                    Current longitude: {taskLocation.longitude}
+                  </Text>
+                </>
+              ) : (
+                <></>
+              )}
             </View>
           </TouchableOpacity>
         </View>

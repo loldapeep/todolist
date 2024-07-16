@@ -13,23 +13,30 @@ const DetailsScreen = ({ route }) => {
       <Text style={styles.categories}>Active</Text>
       <Text style={styles.data}>{route.params.item.active ? "Yes" : "No"}</Text>
 
-      <Text style={styles.categories}>Location</Text>
-      <MapView
-        style={{ width: "100%", flex:1, }}
-        region={{
-          latitude: route.params.item.location.latitude,
-          longitude: route.params.item.location.longitude,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        }}
-      >
-        <Marker
-          coordinate={{
-            latitude: route.params.item.location.latitude,
-            longitude: route.params.item.location.longitude,
-          }}
-        ></Marker>
-      </MapView>
+      {route.params.item.location !== null ? (
+        <>
+          <Text style={styles.categories}>Location</Text>
+          <MapView
+            style={{ width: "100%", flex: 1 }}
+            region={{
+              latitude: route.params.item.location.latitude,
+              longitude: route.params.item.location.longitude,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01,
+            }}
+          >
+            <Marker
+              coordinate={{
+                latitude: route.params.item.location.latitude,
+                longitude: route.params.item.location.longitude,
+              }}
+            ></Marker>
+          </MapView>
+        </>
+      ) : (
+        <></>
+      )}
+
       {/* <Text>{JSON.stringify(route.params.item)}</Text> */}
     </>
   ) : (

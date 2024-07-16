@@ -8,41 +8,44 @@ import DetailsScreen from "../components/DetailsScreen/DetailsScreen";
 import { Firstline, Home2, Setting2 } from "iconsax-react-native";
 import Login from "../components/Login";
 import { Logout } from "../components/LogoutScreen/Logout";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import HomeStack from "./HomeStack";
 
 const Tab = createMaterialBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
 const Root = () => {
   const user = useAppSelector((state: RootState) => state.user.user);
   return user !== null ? (
     <NavigationContainer>
       <Tab.Navigator
-        initialRouteName="Home"
+        initialRouteName="HomeStack"
         activeColor="#6d63ff"
         inactiveColor="#000000"
         // barStyle={{backgroundColor:"#6d63ff"}}
       >
         <Tab.Screen
-          name="Home"
-          component={TodoList}
+          name="HomeStack"
+          component={HomeStack}
           options={{
             tabBarIcon: () => <Home2 color="#6d63ff" />,
           }}
         />
-
+        {/* 
         <Tab.Screen
           name="Details"
           component={DetailsScreen}
           options={{
             tabBarIcon: () => <Firstline color="#6d63ff" />,
           }}
-        />
-          <Tab.Screen
+        /> */}
+        <Tab.Screen
           name="Settings"
           component={Logout}
           options={{
-            tabBarIcon: () => <Setting2 color="#6d63ff"/>,
+            tabBarIcon: () => <Setting2 color="#6d63ff" />,
           }}
-        /> 
+        />
       </Tab.Navigator>
     </NavigationContainer>
   ) : (
